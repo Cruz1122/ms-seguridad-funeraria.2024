@@ -9,3 +9,5 @@ export * from './rol-permisos.controller';
 export * from './permisos-rol.controller';
 export * from './usuario.controller';
 export * from './login.controller';
+export * from './registro-acciones.controller';
+export * from './rol.controller';
