@@ -5,3 +5,5 @@ export * from './registro-acciones-usuario.controller';
 export * from './usuario-registro-acciones.controller';
 export * from './login-usuario.controller';
 export * from './usuario-login.controller';
+export * from './rol-permisos.controller';
+export * from './permisos-rol.controller';

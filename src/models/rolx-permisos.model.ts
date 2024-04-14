@@ -39,6 +39,15 @@ export class RolxPermisos extends Entity {
   })
   descargar: boolean;
 
+  @property({
+    type: 'string',
+  })
+  idRol?: string;
+
+  @property({
+    type: 'string',
+  })
+  idPermisos?: string;
 
   constructor(data?: Partial<RolxPermisos>) {
     super(data);
