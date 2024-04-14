@@ -1,4 +1,10 @@
-import {Entity, belongsTo, hasMany, model, property} from '@loopback/repository';
+import {
+  Entity,
+  belongsTo,
+  hasMany,
+  model,
+  property,
+} from '@loopback/repository';
 import {Login} from './login.model';
 import {RegistroAcciones} from './registro-acciones.model';
 import {Rol} from './rol.model';
@@ -54,9 +60,8 @@ export class Usuario extends Entity {
 
   @property({
     type: 'string',
-    required: true,
   })
-  clave: string;
+  clave?: string;
 
   @property({
     type: 'date',

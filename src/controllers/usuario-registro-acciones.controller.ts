@@ -15,16 +15,14 @@ import {
   post,
   requestBody,
 } from '@loopback/rest';
-import {
-  Usuario,
-  RegistroAcciones,
-} from '../models';
+import {RegistroAcciones, Usuario} from '../models';
 import {UsuarioRepository} from '../repositories';
 
 export class UsuarioRegistroAccionesController {
   constructor(
-    @repository(UsuarioRepository) protected usuarioRepository: UsuarioRepository,
-  ) { }
+    @repository(UsuarioRepository)
+    protected usuarioRepository: UsuarioRepository,
+  ) {}
 
   @get('/usuarios/{id}/registro-acciones', {
     responses: {
@@ -49,7 +47,9 @@ export class UsuarioRegistroAccionesController {
     responses: {
       '200': {
         description: 'Usuario model instance',
-        content: {'application/json': {schema: getModelSchemaRef(RegistroAcciones)}},
+        content: {
+          'application/json': {schema: getModelSchemaRef(RegistroAcciones)},
+        },
       },
     },
   })
@@ -61,11 +61,12 @@ export class UsuarioRegistroAccionesController {
           schema: getModelSchemaRef(RegistroAcciones, {
             title: 'NewRegistroAccionesInUsuario',
             exclude: ['_id'],
-            optional: ['idUsuario']
+            optional: ['idUsuario'],
           }),
         },
       },
-    }) registroAcciones: Omit<RegistroAcciones, '_id'>,
+    })
+    registroAcciones: Omit<RegistroAcciones, '_id'>,
   ): Promise<RegistroAcciones> {
     return this.usuarioRepository.registroAcciones(id).create(registroAcciones);
   }
@@ -88,9 +89,12 @@ export class UsuarioRegistroAccionesController {
       },
     })
     registroAcciones: Partial<RegistroAcciones>,
-    @param.query.object('where', getWhereSchemaFor(RegistroAcciones)) where?: Where<RegistroAcciones>,
+    @param.query.object('where', getWhereSchemaFor(RegistroAcciones))
+    where?: Where<RegistroAcciones>,
   ): Promise<Count> {
-    return this.usuarioRepository.registroAcciones(id).patch(registroAcciones, where);
+    return this.usuarioRepository
+      .registroAcciones(id)
+      .patch(registroAcciones, where);
   }
 
   @del('/usuarios/{id}/registro-acciones', {
@@ -103,7 +107,8 @@ export class UsuarioRegistroAccionesController {
   })
   async delete(
     @param.path.string('id') id: string,
-    @param.query.object('where', getWhereSchemaFor(RegistroAcciones)) where?: Where<RegistroAcciones>,
+    @param.query.object('where', getWhereSchemaFor(RegistroAcciones))
+    where?: Where<RegistroAcciones>,
   ): Promise<Count> {
     return this.usuarioRepository.registroAcciones(id).delete(where);
   }
