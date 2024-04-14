@@ -7,3 +7,5 @@ export * from './login-usuario.controller';
 export * from './usuario-login.controller';
 export * from './rol-permisos.controller';
 export * from './permisos-rol.controller';
+export * from './usuario.controller';
+export * from './login.controller';
