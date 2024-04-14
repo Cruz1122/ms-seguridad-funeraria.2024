@@ -1,4 +1,6 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, belongsTo, hasMany} from '@loopback/repository';
+import {Rol} from './rol.model';
+import {RegistroAcciones} from './registro-acciones.model';
 
 @model()
 export class Usuario extends Entity {
@@ -67,6 +69,11 @@ export class Usuario extends Entity {
   })
   modoRecuperacionCuenta: string;
 
+  @belongsTo(() => Rol, {name: 'rol'})
+  idRol: string;
+
+  @hasMany(() => RegistroAcciones, {keyTo: 'idUsuario'})
+  registroAcciones: RegistroAcciones[];
 
   constructor(data?: Partial<Usuario>) {
     super(data);
