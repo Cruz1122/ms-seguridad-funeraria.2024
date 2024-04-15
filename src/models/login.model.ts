@@ -1,4 +1,4 @@
-import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {Entity, belongsTo, model, property} from '@loopback/repository';
 import {Usuario} from './usuario.model';
 
 @model()
@@ -24,21 +24,18 @@ export class Login extends Entity {
 
   @property({
     type: 'boolean',
-    required: true,
   })
-  reCaptchaResultado: boolean;
+  reCaptchaResultado?: boolean;
 
   @property({
     type: 'string',
-    required: true,
   })
-  direccionIp: string;
+  direccionIp?: string;
 
   @property({
     type: 'string',
-    required: true,
   })
-  token: string;
+  token?: string;
 
   @property({
     type: 'boolean',
