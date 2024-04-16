@@ -18,7 +18,7 @@ export class AuthStrategy implements AuthenticationStrategy {
     @service(SeguridadUsuarioService)
     private servicioSeguridad: SeguridadUsuarioService,
     @inject(AuthenticationBindings.METADATA)
-    private metadata: AuthenticationMetadata,
+    private metadata: AuthenticationMetadata[],
     @repository(RolxPermisosRepository)
     private repositorioRolxPermiso: RolxPermisosRepository,
   ) {}
@@ -32,8 +32,9 @@ export class AuthStrategy implements AuthenticationStrategy {
     let token = parseBearerToken(request);
     if (token) {
       let idRol = this.servicioSeguridad.obtenerRolDesdeToken(token);
-      let idPermiso: string = this.metadata.options![0];
-      let accion: string = this.metadata.options![1];
+      let idPermiso: string = this.metadata[0].options![0];
+      let accion: string = this.metadata[0].options![1];
+      console.log(this.metadata);
 
       let rolxPermisos = await this.repositorioRolxPermiso.findOne({
         where: {
@@ -41,6 +42,12 @@ export class AuthStrategy implements AuthenticationStrategy {
           idPermisos: idPermiso,
         },
       });
+
+      console.log(rolxPermisos);
+      console.log('idRol:' + idRol);
+      console.log('idPermiso:' + idPermiso);
+      console.log('acción:' + accion);
+
       let continuar: boolean = false;
 
       if (rolxPermisos) {
