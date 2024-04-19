@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        form {
+            width: 80%; /* Cambiar a un porcentaje para ser más flexible */
+            max-width: 300px; /* Pero aún limitar el ancho máximo */
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+        }
+        label {
+            display: inline-block;
+            margin-top: 20px;
+        }
+        input[type="text"], input[type="email"], input[type="tel"], input[type="date"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+        }
+        input[type="submit"] {
+            margin-top: 20px;
+            padding: 10px;
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        /* Media query for screens smaller than 600px */
+        @media (max-width: 600px) {
+            form {
+                width: 100%; /* Make the form take up the full width on small screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Registrarse</h1> <!-- Título del formulario -->
+    <form action="/ruta_del_microservicio_de_registro" method="post">
+        <form action="/ruta_del_microservicio_de_registro" method="post">
+            <label for="primerNombre">Primer Nombre:</label><br>
+            <input type="text" id="primerNombre" name="primerNombre" required><br>
+            <label for="segundoNombre">Segundo Nombre:</label><br>
+            <input type="text" id="segundoNombre" name="segundoNombre"><br>
+            <label for="primerApellido">Primer Apellido:</label><br>
+            <input type="text" id="primerApellido" name="primerApellido" required><br>
+            <label for="segundoApellido">Segundo Apellido:</label><br>
+            <input type="text" id="segundoApellido" name="segundoApellido"><br>
+            <label for="lugarResidencia">Lugar de Residencia:</label><br>
+            <input type="text" id="lugarResidencia" name="lugarResidencia" required><br>
+            <label for="correo">Correo:</label><br>
+            <input type="email" id="correo" name="correo" required><br>
+            <label for="telefono">Teléfono:</label><br>
+            <input type="tel" id="telefono" name="telefono" required><br>
+            <label for="modoRecuperacionCuenta">Modo de Recuperación de Cuenta:</label><br>
+            <input type="text" id="modoRecuperacionCuenta" name="modoRecuperacionCuenta" required><br>
+            <input type="submit" value="Registrarse">
+        </form>
+    </form>
+</body>
+</html>
