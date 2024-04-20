@@ -21,6 +21,7 @@ import {
   response,
 } from '@loopback/rest';
 import {UserProfile} from '@loopback/security';
+import {ConfiguracionNotificaciones} from '../config/notificaciones.config';
 import {ConfiguracionSeguridad} from '../config/seguridad.config';
 import {
   Credenciales,
@@ -30,7 +31,7 @@ import {
   Usuario,
 } from '../models';
 import {LoginRepository, UsuarioRepository} from '../repositories';
-import {AuthService, SeguridadUsuarioService} from '../services';
+import {AuthService, NotificacionesService, SeguridadUsuarioService} from '../services';
 
 export class UsuarioController {
   constructor(
@@ -42,6 +43,8 @@ export class UsuarioController {
     public repositorioLogin: LoginRepository,
     @service(AuthService)
     private servicioAuth: AuthService,
+    @service(NotificacionesService)
+    public servicioNotificaciones: NotificacionesService,
   ) { }
 
   @post('/usuario')
@@ -210,6 +213,23 @@ export class UsuarioController {
       this.repositorioLogin.create(login);
       usuario.clave = '';
       // Notificar al usuario vía correo o SMS
+      let datosEmail = {
+        destination: usuario.correo,
+        name: usuario.primerNombre,
+        message: `Su código de 2FA es: ${codigo2fa}`,
+        subject: ConfiguracionNotificaciones.asunto2fa,
+      };
+      let datosSMS = {
+        destination: "+57" + usuario.telefono,
+        name: usuario.primerNombre,
+        message: `Su código de 2FA es: ${codigo2fa}`,
+      };
+      let urlEmail = ConfiguracionNotificaciones.urlEmail2fa
+      let urlSMS = ConfiguracionNotificaciones.urlSMS2fa
+      console.log('Datos de notificación ', datosSMS);
+      console.log('URL ', urlSMS);
+      this.servicioNotificaciones.EnviarNotificacion(datosEmail, urlEmail);
+      this.servicioNotificaciones.EnviarNotificacion(datosSMS, urlSMS);
       return usuario;
     }
     return new HttpErrors[401]('Credenciales inválidas');
