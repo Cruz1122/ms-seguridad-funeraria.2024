@@ -42,7 +42,7 @@ export class UsuarioController {
     public repositorioLogin: LoginRepository,
     @service(AuthService)
     private servicioAuth: AuthService,
-  ) {}
+  ) { }
 
   @post('/usuario')
   @response(200, {
@@ -232,8 +232,9 @@ export class UsuarioController {
     })
     datos: PermisosRolxPermisos,
   ): Promise<UserProfile | undefined> {
+    let idRol = this.servicioSeguridad.obtenerRolDesdeToken(datos.token);
     return this.servicioAuth.VerificarPermisoDeUsuarioPorRol(
-      datos.idRol,
+      idRol,
       datos.idPermisos,
       datos.accion,
     );
