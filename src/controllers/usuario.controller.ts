@@ -20,15 +20,17 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import {UserProfile} from '@loopback/security';
 import {ConfiguracionSeguridad} from '../config/seguridad.config';
 import {
   Credenciales,
   FactorDeAutenticacionPorCodigo,
   Login,
+  PermisosRolxPermisos,
   Usuario,
 } from '../models';
 import {LoginRepository, UsuarioRepository} from '../repositories';
-import {SeguridadUsuarioService} from '../services';
+import {AuthService, SeguridadUsuarioService} from '../services';
 
 export class UsuarioController {
   constructor(
@@ -38,6 +40,8 @@ export class UsuarioController {
     public servicioSeguridad: SeguridadUsuarioService,
     @repository(LoginRepository)
     public repositorioLogin: LoginRepository,
+    @service(AuthService)
+    private servicioAuth: AuthService,
   ) {}
 
   @post('/usuario')
@@ -209,6 +213,30 @@ export class UsuarioController {
       return usuario;
     }
     return new HttpErrors[401]('Credenciales inválidas');
+  }
+
+  @post('/validar-permisos')
+  @response(200, {
+    description: 'Validación de permisos de un usuario para lógica de negocio',
+    content: {
+      'aplication/json': {schema: getModelSchemaRef(PermisosRolxPermisos)},
+    },
+  })
+  async ValidarPermisosDeUsuario(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(PermisosRolxPermisos),
+        },
+      },
+    })
+    datos: PermisosRolxPermisos,
+  ): Promise<UserProfile | undefined> {
+    return this.servicioAuth.VerificarPermisoDeUsuarioPorRol(
+      datos.idRol,
+      datos.idPermisos,
+      datos.accion,
+    );
   }
 
   @post('/verificar-2fa')
