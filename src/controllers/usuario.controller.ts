@@ -25,6 +25,7 @@ import {ConfiguracionNotificaciones} from '../config/notificaciones.config';
 import {ConfiguracionSeguridad} from '../config/seguridad.config';
 import {
   Credenciales,
+  CredencialesRecuperarClave,
   FactorDeAutenticacionPorCodigo,
   Login,
   PermisosRolxPermisos,
@@ -234,6 +235,56 @@ export class UsuarioController {
     }
     return new HttpErrors[401]('Credenciales inválidas');
   }
+
+  @post('/recuperar-clave')
+  @response(200, {
+    description: 'Identificar a un usuario por correo y clave',
+    content: {'aplication/json': {schema: getModelSchemaRef(Usuario)}},
+  })
+  async RecuperarClaveUsuario(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(CredencialesRecuperarClave),
+        },
+      },
+    })
+    credenciales: CredencialesRecuperarClave,
+  ): Promise<Object> {
+    let usuario = await this.usuarioRepository.findOne({
+      where: {
+        correo: credenciales.correo,
+      },
+    });
+    if (usuario) {
+      let nuevaClave = this.servicioSeguridad.crearTextoAleatorio(5);
+      console.log('Nueva clave ', nuevaClave);
+      let claveCifrada = this.servicioSeguridad.cifrarTexto(nuevaClave);
+      usuario.clave = claveCifrada;
+      this.usuarioRepository.updateById(usuario._id, usuario);
+      // Notificar al usuario vía correo o SMS
+      let datosEmail = {
+        destination: usuario.correo,
+        name: usuario.primerNombre,
+        message: `Hola ${usuario.primerNombre}, Su nueva clave es: ${nuevaClave}`,
+        subject: ConfiguracionNotificaciones.asunto2fa,
+      };
+      let datosSMS = {
+        destination: "+57" + usuario.telefono,
+        name: usuario.primerNombre,
+        message: `Hola ${usuario.primerNombre}, Su nueva clave es: ${nuevaClave}`,
+      };
+      let urlEmail = ConfiguracionNotificaciones.urlEmail2fa
+      let urlSMS = ConfiguracionNotificaciones.urlSMS2fa
+      console.log('Datos de notificación ', datosSMS);
+      console.log('URL ', urlSMS);
+      this.servicioNotificaciones.EnviarNotificacion(datosEmail, urlEmail);
+      this.servicioNotificaciones.EnviarNotificacion(datosSMS, urlSMS);
+      return usuario;
+    }
+    return new HttpErrors[401]('Credenciales inválidas');
+  }
+
 
   @post('/validar-permisos')
   @response(200, {
