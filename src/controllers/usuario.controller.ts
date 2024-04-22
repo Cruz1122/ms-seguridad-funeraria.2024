@@ -32,7 +32,11 @@ import {
   Usuario,
 } from '../models';
 import {LoginRepository, UsuarioRepository} from '../repositories';
-import {AuthService, NotificacionesService, SeguridadUsuarioService} from '../services';
+import {
+  AuthService,
+  NotificacionesService,
+  SeguridadUsuarioService,
+} from '../services';
 
 export class UsuarioController {
   constructor(
@@ -46,7 +50,7 @@ export class UsuarioController {
     private servicioAuth: AuthService,
     @service(NotificacionesService)
     public servicioNotificaciones: NotificacionesService,
-  ) { }
+  ) {}
 
   @post('/usuario')
   @response(200, {
@@ -66,13 +70,10 @@ export class UsuarioController {
     })
     usuario: Omit<Usuario, '_id'>,
   ): Promise<Usuario> {
-    // crear la clave
     let clave = this.servicioSeguridad.crearTextoAleatorio(10);
-    // cifrar la clave
     let claveCifrada = this.servicioSeguridad.cifrarTexto(clave);
-    // asignar la clave cifrada al Usuario
     usuario.clave = claveCifrada;
-    // enviar un correo electrónico de notificación
+
     return this.usuarioRepository.create(usuario);
   }
 
@@ -221,14 +222,12 @@ export class UsuarioController {
         subject: ConfiguracionNotificaciones.asunto2fa,
       };
       let datosSMS = {
-        destination: "+57" + usuario.telefono,
+        destination: '+57' + usuario.telefono,
         name: usuario.primerNombre,
         message: `Su código de 2FA es: ${codigo2fa}`,
       };
-      let urlEmail = ConfiguracionNotificaciones.urlEmail2fa
-      let urlSMS = ConfiguracionNotificaciones.urlSMS2fa
-      console.log('Datos de notificación ', datosSMS);
-      console.log('URL ', urlSMS);
+      let urlEmail = ConfiguracionNotificaciones.urlEmail2fa;
+      let urlSMS = ConfiguracionNotificaciones.urlSMS2fa;
       this.servicioNotificaciones.EnviarNotificacion(datosEmail, urlEmail);
       this.servicioNotificaciones.EnviarNotificacion(datosSMS, urlSMS);
       return usuario;
@@ -270,12 +269,12 @@ export class UsuarioController {
         subject: ConfiguracionNotificaciones.asunto2fa,
       };
       let datosSMS = {
-        destination: "+57" + usuario.telefono,
+        destination: '+57' + usuario.telefono,
         name: usuario.primerNombre,
         message: `Hola ${usuario.primerNombre}, Su nueva clave es: ${nuevaClave}`,
       };
-      let urlEmail = ConfiguracionNotificaciones.urlEmail2fa
-      let urlSMS = ConfiguracionNotificaciones.urlSMS2fa
+      let urlEmail = ConfiguracionNotificaciones.urlEmail2fa;
+      let urlSMS = ConfiguracionNotificaciones.urlSMS2fa;
       console.log('Datos de notificación ', datosSMS);
       console.log('URL ', urlSMS);
       this.servicioNotificaciones.EnviarNotificacion(datosEmail, urlEmail);
@@ -284,7 +283,6 @@ export class UsuarioController {
     }
     return new HttpErrors[401]('Credenciales inválidas');
   }
-
 
   @post('/validar-permisos')
   @response(200, {
