@@ -78,6 +78,7 @@ export class UsuarioController {
     let clave = this.servicioSeguridad.crearTextoAleatorio(10);
     let claveCifrada = this.servicioSeguridad.cifrarTexto(clave);
     usuario.clave = claveCifrada;
+    usuario.estadoValidacion = true;
 
     return this.usuarioRepository.create(usuario);
   }
