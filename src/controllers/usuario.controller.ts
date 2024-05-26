@@ -50,8 +50,12 @@ export class UsuarioController {
     private servicioAuth: AuthService,
     @service(NotificacionesService)
     public servicioNotificaciones: NotificacionesService,
-  ) {}
+  ) { }
 
+  @authenticate({
+    strategy: 'auth',
+    options: ["Usuario", "guardar"],
+  })
   @post('/usuario')
   @response(200, {
     description: 'Usuario model instance',
@@ -73,6 +77,47 @@ export class UsuarioController {
     let clave = this.servicioSeguridad.crearTextoAleatorio(10);
     let claveCifrada = this.servicioSeguridad.cifrarTexto(clave);
     usuario.clave = claveCifrada;
+
+    return this.usuarioRepository.create(usuario);
+  }
+
+  @post('/usuario-publico')
+  @response(200, {
+    description: 'Usuario model instance',
+    content: {'application/json': {schema: getModelSchemaRef(Usuario)}},
+  })
+  async creacionPublica(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Usuario, {
+            title: 'NewUsuario',
+            exclude: ['_id'],
+          }),
+        },
+      },
+    })
+    usuario: Omit<Usuario, '_id'>,
+  ): Promise<Usuario> {
+    let clave = this.servicioSeguridad.crearTextoAleatorio(10);
+    let claveCifrada = this.servicioSeguridad.cifrarTexto(clave);
+    usuario.clave = claveCifrada;
+    //hash de validacion de correo
+    let hash = this.servicioSeguridad.crearTextoAleatorio(100);
+    usuario.hashValidacion = hash;
+    usuario.estadoValidacion = false;
+    usuario.aceptado = false;
+
+    //Notificacion del hash
+    let enlace = `<a href="${ConfiguracionNotificaciones.urlValidacionCorreoFrontend}/${hash}" target='_blank'>Validar</a>`;
+    let datosEmail = {
+      destination: usuario.correo,
+      name: usuario.primerNombre,
+      message: `Por favor visite este link para validar si correo: ${enlace}`,
+      subject: ConfiguracionNotificaciones.asuntoVerificaciónCorreo,
+    };
+    let urlEmail = ConfiguracionNotificaciones.urlEmail2fa;
+    this.servicioNotificaciones.EnviarNotificacion(datosEmail, urlEmail);
 
     return this.usuarioRepository.create(usuario);
   }
