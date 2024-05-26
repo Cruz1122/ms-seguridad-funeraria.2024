@@ -27,6 +27,7 @@ import {
   Credenciales,
   CredencialesRecuperarClave,
   FactorDeAutenticacionPorCodigo,
+  HashValidacionUsuario,
   Login,
   PermisosRolxPermisos,
   Usuario,
@@ -120,7 +121,46 @@ export class UsuarioController {
     let urlEmail = ConfiguracionNotificaciones.urlEmail2fa;
     this.servicioNotificaciones.EnviarNotificacion(datosEmail, urlEmail);
 
+    // Envío de clave
+    let datosCorreo = {
+      destination: usuario.correo,
+      name: usuario.primerNombre,
+      message: `Su clave asignada es: ${clave}`,
+      subject: ConfiguracionNotificaciones.claveAsignada,
+    };
+
+    this.servicioNotificaciones.EnviarNotificacion(datosCorreo, urlEmail);
+
     return this.usuarioRepository.create(usuario);
+  }
+
+  @post('/validar-hash-usuario')
+  @response(200, {
+    description: 'Validar hash',
+  })
+  async ValidarHashUsuario(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(HashValidacionUsuario, {}),
+        },
+      },
+    })
+    hash: HashValidacionUsuario,
+  ): Promise<boolean> {
+    let usuario = await this.usuarioRepository.findOne({
+      where: {
+        hashValidacion: hash.codigoHash,
+        estadoValidacion: false,
+      },
+    });
+
+    if (usuario) {
+      usuario.estadoValidacion = true;
+      this.usuarioRepository.replaceById(usuario._id, usuario);
+      return true;
+    }
+    return false;
   }
 
   @get('/usuario/count')
