@@ -50,11 +50,11 @@ export class UsuarioController {
     private servicioAuth: AuthService,
     @service(NotificacionesService)
     public servicioNotificaciones: NotificacionesService,
-  ) { }
+  ) {}
 
   @authenticate({
     strategy: 'auth',
-    options: ["Usuario", "guardar"],
+    options: ['Usuario', 'guardar'],
   })
   @post('/usuario')
   @response(200, {
@@ -109,11 +109,12 @@ export class UsuarioController {
     usuario.aceptado = false;
 
     //Notificacion del hash
-    let enlace = `<a href="${ConfiguracionNotificaciones.urlValidacionCorreoFrontend}/${hash}" target='_blank'>Validar</a>`;
+    let enlace =
+      ConfiguracionNotificaciones.urlValidacionCorreoFrontend + '/' + hash;
     let datosEmail = {
       destination: usuario.correo,
       name: usuario.primerNombre,
-      message: `Por favor visite este link para validar si correo: ${enlace}`,
+      message: `Por favor visite este link para validar su correo: ${enlace}`,
       subject: ConfiguracionNotificaciones.asuntoVerificaciónCorreo,
     };
     let urlEmail = ConfiguracionNotificaciones.urlEmail2fa;
