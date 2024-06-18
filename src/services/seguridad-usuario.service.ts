@@ -1,8 +1,8 @@
-import {/* inject, */ BindingScope, injectable} from '@loopback/core';
+import { /* inject, */ BindingScope, injectable} from '@loopback/core';
 import {repository} from '@loopback/repository';
 import {ConfiguracionSeguridad} from '../config/seguridad.config';
-import {Credenciales, FactorDeAutenticacionPorCodigo, Usuario} from '../models';
-import {LoginRepository, UsuarioRepository} from '../repositories';
+import {Credenciales, FactorDeAutenticacionPorCodigo, RolxPermisos, Usuario} from '../models';
+import {LoginRepository, RolxPermisosRepository, UsuarioRepository} from '../repositories';
 const generator = require('generate-password');
 const MD5 = require('crypto-js/md5');
 var jwt = require('jsonwebtoken');
@@ -14,7 +14,9 @@ export class SeguridadUsuarioService {
     public repositorioUsuario: UsuarioRepository,
     @repository(LoginRepository)
     public repositorioLogin: LoginRepository,
-  ) {}
+    @repository(RolxPermisosRepository)
+    private repositorioRolxPermisos: RolxPermisosRepository,
+  ) { }
 
   /**
    * Crear una clave aleatoria
@@ -104,5 +106,22 @@ export class SeguridadUsuarioService {
   obtenerRolDesdeToken(tk: string): string {
     let obj = jwt.verify(tk, ConfiguracionSeguridad.claveJWT);
     return obj.role;
+  }
+
+
+  /**
+   * Retorna los permisos del rol
+   * @param idRol id del rol a busca y que esta asociado al usuario
+   */
+  async consultarPermisosDeMenuPorUsuario(idRol: string): Promise<RolxPermisos[]> {
+    let permisos: RolxPermisos[] = await this.repositorioRolxPermisos.find(
+      {
+        where: {
+          listar: true,
+          idRol: idRol,
+        }
+      }
+    );
+    return permisos;
   }
 }

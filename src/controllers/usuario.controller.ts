@@ -51,7 +51,7 @@ export class UsuarioController {
     private servicioAuth: AuthService,
     @service(NotificacionesService)
     public servicioNotificaciones: NotificacionesService,
-  ) {}
+  ) { }
 
   @authenticate({
     strategy: 'auth',
@@ -109,6 +109,7 @@ export class UsuarioController {
     usuario.hashValidacion = hash;
     usuario.estadoValidacion = false;
     usuario.aceptado = false;
+    usuario.idRol = ConfiguracionSeguridad.rolUsuarioPublico;
 
     //Notificacion del hash
     let enlace =
@@ -291,6 +292,7 @@ export class UsuarioController {
     credenciales: Credenciales,
   ): Promise<Object> {
     let usuario = await this.servicioSeguridad.identificarUsuario(credenciales);
+    console.log(usuario);
     if (usuario) {
       let codigo2fa = this.servicioSeguridad.crearTextoAleatorio(5);
       let login: Login = new Login();
@@ -413,6 +415,7 @@ export class UsuarioController {
     let usuario = await this.servicioSeguridad.validarCodigo2fa(credenciales);
     if (usuario) {
       let token = this.servicioSeguridad.crearToken(usuario);
+      let menu = [];
       if (usuario) {
         usuario.clave = '';
         try {
@@ -430,10 +433,11 @@ export class UsuarioController {
             'No se ha almacenado el cambio de estado del token en la base de datos',
           );
         }
-
+        menu = await this.servicioSeguridad.consultarPermisosDeMenuPorUsuario(usuario.idRol)
         return {
           user: usuario,
           token: token,
+          menu: menu,
         };
       }
     }
